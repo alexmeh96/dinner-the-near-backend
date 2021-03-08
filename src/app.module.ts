@@ -7,6 +7,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
+import { MealModule } from './meal/meal.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
 
 @Module({
   imports: [
@@ -18,7 +20,9 @@ import { JwtService } from '@nestjs/jwt';
       synchronize: true
     }),
     UserModule,
-    AuthModule
+    AuthModule,
+    MealModule,
+    RestaurantModule
   ],
   controllers: [AppController],
   providers: [AppService],
