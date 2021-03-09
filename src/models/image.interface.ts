@@ -1,10 +1,9 @@
 import { Restaurant } from './restaurant.interface';
-import { Image } from './image.interface';
+import { Meal } from './meal.interface';
 
-export interface Meal {
+export interface Image {
   id?: number;
   name?: string;
+  meal?: Meal;
   restaurant?: Restaurant;
-  profileImage?: string;
-  images?: Image[];
 }

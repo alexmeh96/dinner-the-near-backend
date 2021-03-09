@@ -1,25 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { RestaurantEntity } from '../models/restaurant.entity';
 import { Repository } from 'typeorm';
 import { MealEntity } from '../models/meal.entity';
 import { Meal } from '../models/meal.interface';
+import { RestaurantService } from '../restaurant/restaurant.service';
+import { Image } from '../models/image.interface';
 
 @Injectable()
 export class MealService {
-  constructor(@InjectRepository(MealEntity) private readonly mealRepository: Repository<MealEntity>) {
+  constructor(@InjectRepository(MealEntity) private readonly mealRepository: Repository<MealEntity>,
+              private restaurantService: RestaurantService,
+  ) {
   }
 
   async allMeals(): Promise<Meal[]> {
-    return this.mealRepository.find();
+    return this.mealRepository.find({ relations: ['restaurant', 'images'] });
   }
 
   async oneMeal(id: number): Promise<Meal> {
     return this.mealRepository.findOne(id);
   }
 
-  async create(meal: Meal): Promise<Meal> {
-    return this.mealRepository.save(meal);
+  async create(idRestaurant: number, meal: Meal): Promise<Meal> {
+    try {
+      meal.restaurant = await this.restaurantService.oneRestaurant(idRestaurant);
+      return this.mealRepository.save(meal);
+    } catch {
+      throw Error;
+    }
   }
 
   async updateOne(id: number, meal: Meal): Promise<any> {
@@ -29,4 +37,9 @@ export class MealService {
   async deleteOne(id: number): Promise<any> {
     return this.mealRepository.delete(id);
   }
+
+  async addProfileImage(id: number, filename: any): Promise<any> {
+    return this.updateOne(id, { profileImage: filename });
+  }
+
 }

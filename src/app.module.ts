@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
 import { MealModule } from './meal/meal.module';
 import { RestaurantModule } from './restaurant/restaurant.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { RestaurantModule } from './restaurant/restaurant.module';
     UserModule,
     AuthModule,
     MealModule,
-    RestaurantModule
+    RestaurantModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],

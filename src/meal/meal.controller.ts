@@ -1,10 +1,28 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Res,
+  UploadedFile,
+  UploadedFiles,
+  UseInterceptors,
+} from '@nestjs/common';
 import { MealService } from './meal.service';
 import { Meal } from '../models/meal.interface';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import * as path from 'path';
+import { storage } from '../utils/utils';
+import { ImageService } from '../image/image.service';
 
 @Controller('meal')
 export class MealController {
-  constructor(private mealService: MealService) {
+  constructor(private mealService: MealService, private imageService: ImageService) {
   }
 
   @Get()
@@ -18,8 +36,8 @@ export class MealController {
   }
 
   @Post()
-  async create(@Body() meal: Meal): Promise<Meal | Object> {
-    return this.mealService.create(meal);
+  async create(@Body() meal: Meal, @Body('id') idRestaurant: number): Promise<Meal | Object> {
+    return this.mealService.create(idRestaurant, meal);
   }
 
   @Put(':id')
@@ -31,4 +49,31 @@ export class MealController {
   async deleteOne(@Param('id') id: number): Promise<any> {
     return this.mealService.deleteOne(id);
   }
+
+  @Post('profileImage')
+  @UseInterceptors(FileInterceptor('file', storage('./uploads/meal/profileImage')))
+  async uploadImage(@UploadedFile() file, @Body('mealId') id: number): Promise<Object> {
+    return this.mealService.addProfileImage(id, file.filename)
+  }
+
+  @Get('profileImage/:imageName')
+  async getProfileImage(@Param('imageName') imageName, @Res() res): Promise<Object> {
+    const name: string = "uploads/meal/profileImage/" + imageName
+    return res.sendFile(path.join(process.cwd(), name));
+  }
+
+  @Post('images')
+  @UseInterceptors(FilesInterceptor('image',5, storage('./uploads/meal/img')))
+  async uploadImages(@UploadedFiles() files, @Body('mealId') id: number): Promise<Object> {
+    const filename: string[] = files.map(file => file.filename)
+    return this.imageService.addMealImages(id, filename)
+  }
+
+  @Get('image/:imageName')
+  async getImage(@Param('imageName') imageName, @Res() res): Promise<Object> {
+    const name: string = "uploads/meal/img/" + imageName
+    return res.sendFile(path.join(process.cwd(), name));
+  }
+
+
 }
