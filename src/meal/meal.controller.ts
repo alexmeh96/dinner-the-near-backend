@@ -36,9 +36,17 @@ export class MealController {
   }
 
   @Post()
-  async create(@Body() meal: Meal, @Body('id') idRestaurant: number): Promise<Meal | Object> {
-    return this.mealService.create(idRestaurant, meal);
+  async create(@Body() meal: Meal, @Body('restaurantId') restaurantId: number): Promise<Meal | Object> {
+    return this.mealService.create(restaurantId, meal);
   }
+
+  @Post('add')
+  @UseInterceptors(FileInterceptor('file', storage('./uploads/meal/profileImage')))
+  async addMeal(@UploadedFile() file, @Body() meal: Meal, @Body('restaurantId') restaurantId: number): Promise<Object> {
+    meal.profileImage = file.filename
+    return this.mealService.create(restaurantId, meal);
+  }
+
 
   @Put(':id')
   async updateOne(@Param('id') id: number, @Body() meal: Meal): Promise<any> {

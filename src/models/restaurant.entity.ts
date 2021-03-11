@@ -11,6 +11,12 @@ export class RestaurantEntity {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  avgPrice: number;
+
+  @Column({ nullable: true })
+  description: string;
+
   @OneToMany(type => MealEntity, meal => meal.restaurant)
   meals: MealEntity[];
 
@@ -19,4 +25,6 @@ export class RestaurantEntity {
 
   @OneToMany(type => ImageEntity, image => image.restaurant)
   images: ImageEntity[];
+
+
 }

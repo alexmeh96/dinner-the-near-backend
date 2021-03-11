@@ -14,11 +14,11 @@ export class MealService {
   }
 
   async allMeals(): Promise<Meal[]> {
-    return this.mealRepository.find({ relations: ['restaurant', 'images'] });
+    return this.mealRepository.find();
   }
 
   async oneMeal(id: number): Promise<Meal> {
-    return this.mealRepository.findOne(id);
+    return this.mealRepository.findOne(id, {relations: ['restaurant', 'images']});
   }
 
   async create(idRestaurant: number, meal: Meal): Promise<Meal> {

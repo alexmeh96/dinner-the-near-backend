@@ -10,6 +10,12 @@ export class MealEntity {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  price: number;
+
+  @Column({ nullable: true })
+  description: string;
+
   @ManyToOne(type => RestaurantEntity, restaurant => restaurant.meals)
   restaurant: RestaurantEntity;
 

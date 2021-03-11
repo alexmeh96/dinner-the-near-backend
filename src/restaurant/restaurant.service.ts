@@ -15,14 +15,15 @@ export class RestaurantService {
   }
 
   async allRestaurant(): Promise<Restaurant[]> {
-    return this.restaurantRepository.find({ relations: ['meals'] });
+    return this.restaurantRepository.find();
   }
 
   async oneRestaurant(id: number): Promise<Restaurant> {
-    return this.restaurantRepository.findOne(id);
+    return this.restaurantRepository.findOne(id, {relations: ['images', 'meals']});
   }
 
   async create(restaurant: Restaurant): Promise<Restaurant> {
+
     return this.restaurantRepository.save(restaurant);
   }
 

@@ -24,14 +24,18 @@ export class AuthService {
     return <any | boolean>bcrypt.compare(newPassword, passwordHash)
   }
 
-  async login(user: User): Promise<string> {
-    return this.validateUser(user.email, user.password).then((user: User) => {
-      if (user) {
-        return this.generateJwt(user)
-      } else {
-        return 'wrong credentials'
+  async login(user: User): Promise<Object> {
+    const usr: User = await this.validateUser(user.email, user.password)
+    if (usr) {
+      const jwt: string = await this.generateJwt(usr)
+      return {
+        access_token: jwt,
+        expiresIn: process.env.EXPIRESIN,
+        user: usr
       }
-    })
+    } else {
+      return 'wrong credentials'
+    }
   }
 
   async validateUser(email: string, password: string): Promise<User> {

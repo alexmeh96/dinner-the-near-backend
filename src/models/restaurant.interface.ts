@@ -7,4 +7,6 @@ export interface Restaurant {
   meals?: Meal[];
   profileImage?: string;
   images?: Image[];
+  avgPrice?: number;
+  description?: string;
 }

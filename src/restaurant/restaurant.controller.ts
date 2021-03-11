@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
+  Get, HttpStatus,
   Param,
   Post,
   Put,
@@ -28,8 +28,9 @@ export class RestaurantController {
   }
 
   @Get()
-  async allRestaurant(): Promise<Restaurant[]> {
-    return this.restaurantService.allRestaurant();
+  async allRestaurant(@Res() res) {
+    const restaurants = await this.restaurantService.allRestaurant()
+    return res.status(HttpStatus.OK).json(restaurants)
   }
 
   @Get(':id')
@@ -41,6 +42,17 @@ export class RestaurantController {
   async create(@Body() restaurant: Restaurant): Promise<Restaurant> {
     return this.restaurantService.create(restaurant);
   }
+
+  @Post('full')
+  @UseInterceptors(FilesInterceptor('image', 5, storage('./uploads/restaurant/img')))
+  @UseInterceptors(FileInterceptor('file', storage('./uploads/restaurant/profileImage')))
+  async createFull(@UploadedFile() file, @UploadedFiles() files) {
+    console.log(file)
+    console.log('#########################################')
+    console.log(files)
+    return
+  }
+
 
   @Put(':id')
   async updateOne(@Param('id') id: number, @Body() restaurant: Restaurant): Promise<any> {
@@ -55,8 +67,14 @@ export class RestaurantController {
   @Post('profileImage')
   @UseInterceptors(FileInterceptor('file', storage('./uploads/restaurant/profileImage')))
   async uploadFile(@UploadedFile() file, @Body('restaurantId') id: number): Promise<Object> {
-    console.log(file);
     return this.restaurantService.addProfileImage(id, file.filename);
+  }
+
+  @Post('/add')
+  @UseInterceptors(FileInterceptor('file', storage('./uploads/restaurant/profileImage')))
+  async addRestaurant(@UploadedFile() file, @Body() restaurant: Restaurant): Promise<Object> {
+    restaurant.profileImage = file.filename
+    return this.restaurantService.create(restaurant);
   }
 
   @Get('profileImage/:imageName')
@@ -68,6 +86,7 @@ export class RestaurantController {
   @Post('images')
   @UseInterceptors(FilesInterceptor('image', 5, storage('./uploads/restaurant/img')))
   async uploadImages(@UploadedFiles() files, @Body('restaurantId') id: number): Promise<Object> {
+    console.log(files)
     const filename: string[] = files.map(file => file.filename);
     return this.imageService.addRestaurantImages(id, filename);
   }

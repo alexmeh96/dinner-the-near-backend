@@ -12,12 +12,7 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() user: User): Promise<Object> {
-    return this.authService.login(user).then((jwt: string) => {
-      return {
-        access_token: jwt,
-        expiresIn: process.env.EXPIRESIN,
-      };
-    });
+    return this.authService.login(user);
   }
 
   @Post('register')
